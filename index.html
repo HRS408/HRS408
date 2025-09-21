@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harsh H. Nimavat | AI/ML & Engineering Portfolio</title>
+    <style>
+        /* CSS Reset & Global Styles */
+        :root {
+            --bg-color: #f5f5dc; /* Beige */
+            --card-color: #e3d5b8; /* Lighter Brown/Tan */
+            --primary-color: #6F4E37; /* Coffee Brown */
+            --text-main: #1c1c1c; /* Nearly Black */
+            --text-secondary: #5d4037; /* Darker Brown */
+            --font-sans: 'Calibri', 'San Francisco', 'SF Pro Text', -apple-system, system-ui, sans-serif;
+            --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+        }
+
+        /* Canvas Background */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: rgba(245, 245, 220, 0.85); /* Semi-transparent Beige */
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--card-color);
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo {
+            color: var(--primary-color);
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 25px;
+        }
+
+        nav ul li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Sections */
+        section {
+            padding: 100px 0;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 40px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 50%;
+            height: 2px;
+            background: var(--primary-color);
+            margin-top: 8px;
+        }
+
+        /* Hero Section */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        
+        #hero h1 {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            font-family: var(--font-mono);
+            margin-bottom: 20px;
+        }
+        
+        #hero h2 {
+            font-size: clamp(40px, 8vw, 80px);
+            font-weight: bold;
+            color: var(--text-main);
+            line-height: 1.1;
+        }
+
+        #hero h3 {
+            font-size: clamp(30px, 6vw, 60px);
+            font-weight: bold;
+            color: var(--text-secondary);
+            line-height: 1.1;
+            margin-bottom: 30px;
+        }
+
+        #hero .hero-intro {
+            background-color: white;
+            padding: 25px;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            max-width: 600px;
+        }
+
+        #hero p {
+            max-width: 600px;
+            color: var(--text-secondary);
+        }
+
+        /* About Section */
+        #about .about-content {
+            display: grid;
+            grid-template-columns: 3fr 2fr;
+            gap: 50px;
+            align-items: flex-start;
+            background-color: white;
+            padding: 30px;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        #about p {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+        
+        #about .profile-image-wrapper {
+            position: relative;
+            max-width: 300px;
+            display: inline-block; /* Add this line */
+        }
+
+        #about .profile-image {
+            width: 100%;
+            border-radius: 5px;
+            position: relative;
+            z-index: 2;
+            filter: grayscale(20%);
+        }
+        
+    
+
+        /* Experience Section */
+        .timeline {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 2px;
+            background-color: var(--card-color);
+            top: 0;
+            bottom: 0;
+            left: 30px;
+        }
+        
+        .timeline-item {
+            padding: 10px 40px;
+            padding-left: 75px;
+            position: relative;
+            background-color: inherit;
+        }
+
+        .timeline-item::before {
+            content: ' ';
+            height: 15px;
+            width: 15px;
+            position: absolute;
+            left: 23px;
+            top: 24px;
+            background-color: var(--primary-color);
+            border: 2px solid var(--bg-color);
+            border-radius: 50%;
+            z-index: 1;
+        }
+        
+        .timeline-content {
+            padding: 20px 30px;
+            background-color: white;
+            border-radius: 6px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .timeline-content:hover {
+             transform: translateY(-5px);
+             box-shadow: 0 10px 20px rgba(0,0,0,0.07);
+        }
+
+        .timeline-content h3 {
+            color: var(--text-main);
+            font-size: 1.2rem;
+        }
+
+        .timeline-content .company {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .timeline-content .date {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+        
+        .timeline-content ul {
+            list-style-type: none;
+        }
+
+        .timeline-content ul li {
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .timeline-content ul li::before {
+            content: "▹";
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+        }
+
+        /* Projects Section */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .project-card {
+            background-color: white;
+            padding: 25px;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .project-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.07);
+        }
+        
+        .project-card h3 {
+            color: var(--text-main);
+            margin-bottom: 10px;
+        }
+
+        .project-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            flex-grow: 1;
+        }
+        
+        .project-tags {
+            margin-top: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .project-links {
+            margin-top: 20px;
+        }
+        
+        .project-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin-right: 15px;
+            font-family: var(--font-mono);
+        }
+
+        /* Education */
+        .education-entry {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .education-entry h3 {
+            color: var(--text-main);
+        }
+
+        .education-entry .institution {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .education-entry .date {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Contact Section */
+        #contact {
+            text-align: center;
+        }
+
+        #contact .contact-intro {
+            background-color: white;
+            padding: 25px;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+            text-align: left;
+        }
+
+        #contact p {
+            color: var(--text-secondary);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            background-color: transparent;
+            text-decoration: none;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: rgba(111, 78, 55, 0.1);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media(max-width: 768px) {
+            nav .container {
+                flex-direction: column;
+            }
+            nav ul {
+                margin-top: 10px;
+            }
+            nav ul li {
+                margin: 0 10px;
+            }
+            #about .about-content {
+                grid-template-columns: 1fr;
+            }
+            #about .profile-image-wrapper {
+                margin: 40px auto 0 auto;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
+
+    <nav>
+        <div class="container">
+            <a href="#" class="logo">HN</a>
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#education">Education</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header id="hero">
+        <div class="container">
+            <h1>Hi, my name is</h1>
+            <h2>Harsh H. Nimavat.</h2>
+            <h3>I build solutions at the intersection of engineering and AI.</h3>
+            <div class="hero-intro">
+                <p>
+                    I'm a mechanical engineer with over four years of experience in the aerospace sector, specializing in structural analysis, product design, and process automation. I am now pivoting to leverage my deep domain expertise to solve complex engineering challenges using AI and Machine Learning.
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="about" class="container">
+            <h2 class="section-title">About Me</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>
+                        As a detail-oriented Mechanical Engineer, I have spent years working on the full product lifecycle, from initial design and electromechanical integration to complex structural analysis for major aircraft projects. My core expertise lies in designing components with tools like Creo and CATIA, and performing advanced static stress and DFEM analysis using HyperWorks.
+                    </p>
+                    <p>
+                        A significant part of my work has involved process automation. I've developed custom tools with Python and VBA to automate routine tasks like load extraction and Reserve Factor calculations, which significantly boosted efficiency and accuracy. This experience sparked my passion for data-driven solutions and led me to pursue a Master's in Artificial Intelligence.
+                    </p>
+                    <p>
+                        I am now eager to apply my comprehensive skill set in a challenging role where I can combine my mechanical engineering background with cutting-edge AI/ML techniques to contribute to innovative products.
+                    </p>
+                </div>
+                <div class="profile-image-wrapper">
+                    <!-- 
+                        IMPORTANT: 
+                        Replace 'profile.jpg' with the name of your photo file.
+                        Make sure the image is in the same folder as this HTML file.
+                    -->
+                    <img src="https://i.postimg.cc/kXCvzkx9/BWAI-profile.png" alt="Harsh H. Nimavat" class="profile-image">
+                </div>
+            </div>
+        </section>
+
+        <section id="experience" class="container">
+            <h2 class="section-title">Work Experience</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>Stress Analysis & Design Engineer <span class="company">@ MetricsNumero Technology Pvt Ltd</span></h3>
+                        <p class="date">September 2022 - Present &middot; Bengaluru, Karnataka, India</p>
+                        <ul>
+                            <li>Analyzed primary and secondary aircraft structures, performing static stress, fatigue, and DFEM analysis as per 14 CFR standards.</li>
+                            <li>Played a key role in a Hybrid Electric Propulsion (HEP) project, focusing on the structural integrity of nacelle modifications.</li>
+                            <li>Automated critical analysis tasks, including load extraction and Reserve Factor calculations for thousands of load cases, using Python scripts and advanced VBA macros.</li>
+                            <li>Designed and documented the installation of complex electrical wiring harnesses and their routing on aircraft using CATIA for 3D modeling.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>Mechanical Design Engineer <span class="company">@ Cynectix</span></h3>
+                        <p class="date">March 2022 - September 2022 (7 months) &middot; Ahmedabad, Gujarat, India</p>
+                        <ul>
+                            <li>Designed custom hydraulic systems, ducting assemblies, and piping layouts for clients in heavy industries.</li>
+                            <li>Leveraged Creo, SolidWorks, and Autodesk Inventor to create detailed 3D models and 2D manufacturing drawings.</li>
+                            <li>Developed and implemented key design team resources, including checklists, SOPs, and best-practice guidelines.</li>
+                        </ul>
+                    </div>
+                </div>
+                 <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h3>Design Trainee <span class="company">@ Bosch Rexroth India</span></h3>
+                        <p class="date">February 2021 - March 2022 (1 year 2 months) &middot; Ahmedabad, Gujarat, India</p>
+                        <ul>
+                            <li>Designed hydraulic power units, complex manifold blocks, and associated fabrication structures using PTC Creo.</li>
+                            <li>Managed design data, version control, and Bill of Materials (BOM) within PTC Windchill PLM and SAP ERP environments.</li>
+                            <li>Gained extensive hands-on training in industrial hydraulics, from circuit design to test bench validation.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="projects" class="container">
+            <h2 class="section-title">Projects</h2>
+            <div class="projects-grid">
+                <!-- PROJECT 1: THE FOUNDATIONAL CLASSIC -->
+                <div class="project-card">
+                    <h3>Predictive Maintenance for Turbofan Engines</h3>
+                    <p>An end-to-end project to predict the Remaining Useful Life (RUL) of aircraft engines using NASA's turbofan degradation dataset. This project demonstrates core skills in data cleaning, feature engineering, and classical machine learning.</p>
+                    <div class="project-tags">Python &middot; Pandas &middot; Scikit-learn &middot; XGBoost &middot; Matplotlib</div>
+                    <div class="project-links">
+                        <a href="#" target="_blank">View Code</a>
+                        <a href="#" target="_blank">Live Demo</a>
+                    </div>
+                </div>
+
+                <!-- PROJECT 2: THE DOMAIN-SPECIFIC HERO PROJECT -->
+                <div class="project-card">
+                    <h3>FEA Surrogate Model with Neural Networks</h3>
+                    <p>A deep learning model trained to predict stress analysis results (FEA) based on input design parameters. This surrogate model drastically reduces computation time compared to traditional simulation software like ANSYS or Optistruct.</p>
+                    <div class="project-tags">Python &middot; TensorFlow/Keras &middot; HyperWorks &middot; CAD &middot; Data Generation</div>
+                    <div class="project-links">
+                        <a href="#" target="_blank">View Code</a>
+                        <a href="#" target="_blank">Live Demo</a>
+                    </div>
+                </div>
+
+                <!-- PROJECT 3: THE MLOPS & DEPLOYMENT PROJECT -->
+                <div class="project-card">
+                    <h3>Deployed API for Manufacturing Defect Detection</h3>
+                    <p>A computer vision model (CNN) trained to identify defects in manufactured parts from images. The model is deployed as a REST API using FastAPI and Docker, making it accessible as a microservice.</p>
+                    <div class="project-tags">PyTorch &middot; OpenCV &middot; FastAPI &middot; Docker &middot; AWS/GCP</div>
+                    <div class="project-links">
+                        <a href="#" target="_blank">View Code</a>
+                        <a href="#" target="_blank">Live Demo</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="education" class="container">
+            <h2 class="section-title">Education</h2>
+            <div class="education-grid">
+                <div class="education-entry">
+                    <h3>Master of Technology - M.Tech, Artificial Intelligence</h3>
+                    <p class="institution">BITS Pilani Work Integrated Learning Programmes</p>
+                    <p class="date">Expected April 2025 - April 2027</p>
+                </div>
+                <div class="education-entry">
+                    <h3>Bachelor of Engineering - BE, Mechanical Engineering</h3>
+                    <p class="institution">Marwadi Education Foundation's Group of Institutions, Rajkot</p>
+                    <p class="date">2016 - 2020</p>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="contact" class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            <div class="contact-intro">
+                <p>
+                    I am actively seeking new opportunities where I can apply my unique blend of mechanical engineering and AI/ML skills. Whether you have a question or just want to connect, feel free to reach out!
+                </p>
+            </div>
+            <a href="mailto:harshnimavat408@gmail.com" class="btn">Say Hello</a>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Designed & Built by Harsh H. Nimavat</p>
+            <p>
+                <a href="https://www.linkedin.com/in/harsh-h-nimavat-0a2496142" target="_blank">LinkedIn</a> &middot; 
+                <a href="#" target="_blank">GitHub</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray;
+
+        // Particle class
+        class Particle {
+            constructor(x, y, directionX, directionY, size, color) {
+                this.x = x;
+                this.y = y;
+                this.directionX = directionX;
+                this.directionY = directionY;
+                this.size = size;
+                this.color = color;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                // Updated particle color
+                ctx.fillStyle = 'rgba(111, 78, 55, 0.5)'; // Coffee Brown
+                ctx.fill();
+            }
+            update() {
+                if (this.x > canvas.width || this.x < 0) {
+                    this.directionX = -this.directionX;
+                }
+                if (this.y > canvas.height || this.y < 0) {
+                    this.directionY = -this.directionY;
+                }
+                this.x += this.directionX;
+                this.y += this.directionY;
+                this.draw();
+            }
+        }
+
+        // Create particle array
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.height * canvas.width) / 9000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = (Math.random() * 2) + 1;
+                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                let directionX = (Math.random() * .4) - .2;
+                let directionY = (Math.random() * .4) - .2;
+                let color = '#6F4E37'; // Coffee Brown
+                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+            }
+        }
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+            connect();
+        }
+
+        // Connect particles
+        function connect() {
+            let opacityValue = 1;
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) +
+                        ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+
+                    if (distance < (canvas.width / 7) * (canvas.height / 7)) {
+                        opacityValue = 1 - (distance / 20000);
+                        // Updated line color
+                        ctx.strokeStyle = 'rgba(111, 78, 55,' + opacityValue + ')'; // Coffee Brown
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+        
+        window.addEventListener('resize', () => {
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+            init();
+        });
+        
+        init();
+        animate();
+    </script>
+</body>
+</html>
+
+
+
